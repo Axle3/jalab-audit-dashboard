@@ -4,6 +4,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import LaundryForm from '@/components/departments/LaundryForm';
 import HotelForm from '@/components/departments/HotelForm';
 import BarInventory from '@/components/departments/BarInventory';
+import ExpensesForm from '@/components/departments/ExpensesForm';
 import DepartmentAnalytics from '@/components/analytics/DepartmentAnalytics';
 import { Department } from '@/types/departments';
 
@@ -74,31 +75,34 @@ const Dashboard = () => {
               ))}
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Previous Records</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead className="text-right">Revenue</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {mockPreviousRecords.map((record) => (
-                      <TableRow key={record.id}>
-                        <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
-                        <TableCell className="capitalize">{record.department}</TableCell>
-                        <TableCell className="text-right">₦{record.revenue.toLocaleString()}</TableCell>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ExpensesForm />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Previous Records</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead className="text-right">Revenue</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {mockPreviousRecords.map((record) => (
+                        <TableRow key={record.id}>
+                          <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
+                          <TableCell className="capitalize">{record.department}</TableCell>
+                          <TableCell className="text-right">₦{record.revenue.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         );
     }
