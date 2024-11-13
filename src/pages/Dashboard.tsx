@@ -8,6 +8,8 @@ import ExpensesForm from '@/components/departments/ExpensesForm';
 import DepartmentAnalytics from '@/components/analytics/DepartmentAnalytics';
 import MonthlySummary from '@/components/analytics/MonthlySummary';
 import { Department } from '@/types/departments';
+import { ArrowLeft, BarChart3, Building2, Receipt, Wallet } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
 
@@ -24,52 +26,68 @@ const mockPreviousRecords = [
 const Dashboard = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
 
+  const getDepartmentIcon = (dept: Department) => {
+    switch (dept) {
+      case 'hotel':
+        return <Building2 className="w-6 h-6" />;
+      case 'bar':
+        return <Receipt className="w-6 h-6" />;
+      case 'restaurant':
+        return <Wallet className="w-6 h-6" />;
+      case 'laundry':
+        return <BarChart3 className="w-6 h-6" />;
+      default:
+        return null;
+    }
+  };
+
   const renderDepartmentContent = () => {
     switch (selectedDepartment) {
       case 'laundry':
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <LaundryForm />
             <DepartmentAnalytics department="laundry" />
           </div>
         );
       case 'hotel':
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <HotelForm />
             <DepartmentAnalytics department="hotel" />
           </div>
         );
       case 'restaurant':
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <HotelForm />
             <DepartmentAnalytics department="restaurant" />
           </div>
         );
       case 'bar':
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fadeIn">
             <BarInventory />
             <DepartmentAnalytics department="bar" />
           </div>
         );
       default:
         return (
-          <div className="space-y-6">
+          <div className="space-y-8 animate-fadeIn">
             <MonthlySummary />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {departments.map((dept) => (
                 <Card
                   key={dept}
-                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                  className="hover:shadow-lg transition-all duration-300 cursor-pointer group animate-slideIn"
                   onClick={() => setSelectedDepartment(dept)}
                 >
-                  <CardHeader>
-                    <CardTitle className="capitalize">{dept}</CardTitle>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium capitalize">{dept}</CardTitle>
+                    {getDepartmentIcon(dept)}
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
                       View and manage {dept} records
                     </p>
                   </CardContent>
@@ -77,11 +95,11 @@ const Dashboard = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <ExpensesForm />
               <Card>
                 <CardHeader>
-                  <CardTitle>Previous Records</CardTitle>
+                  <CardTitle>Recent Records</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -111,16 +129,24 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          {selectedDepartment ? (
+            <span className="capitalize">{selectedDepartment} Department</span>
+          ) : (
+            'Dashboard Overview'
+          )}
+        </h2>
         {selectedDepartment && (
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setSelectedDepartment(null)}
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="flex items-center gap-2"
           >
-            ← Back to Departments
-          </button>
+            <ArrowLeft className="w-4 h-4" />
+            Back to Overview
+          </Button>
         )}
       </div>
       {renderDepartmentContent()}
