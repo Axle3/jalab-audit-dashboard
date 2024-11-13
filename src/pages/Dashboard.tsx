@@ -6,6 +6,7 @@ import HotelForm from '@/components/departments/HotelForm';
 import BarInventory from '@/components/departments/BarInventory';
 import ExpensesForm from '@/components/departments/ExpensesForm';
 import DepartmentAnalytics from '@/components/analytics/DepartmentAnalytics';
+import MonthlySummary from '@/components/analytics/MonthlySummary';
 import { Department } from '@/types/departments';
 
 const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
@@ -56,6 +57,7 @@ const Dashboard = () => {
       default:
         return (
           <div className="space-y-6">
+            <MonthlySummary />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {departments.map((dept) => (
                 <Card

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface AnalyticsProps {
   department: string;
@@ -26,30 +25,18 @@ const DepartmentAnalytics: React.FC<AnalyticsProps> = ({ department }) => {
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
-            <ChartContainer
-              config={{
-                amount: {
-                  theme: {
-                    light: "hsl(var(--primary))",
-                    dark: "hsl(var(--primary))",
-                  },
-                },
-              }}
-            >
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart data={mockData}>
                 <XAxis dataKey="name" />
                 <YAxis />
+                <Tooltip />
                 <Bar
                   dataKey="amount"
-                  fill="currentColor"
-                  className="fill-primary"
+                  fill="hsl(var(--primary))"
                   radius={[4, 4, 0, 0]}
                 />
-                <ChartTooltip>
-                  <ChartTooltipContent />
-                </ChartTooltip>
               </BarChart>
-            </ChartContainer>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
