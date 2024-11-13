@@ -5,6 +5,8 @@ import HotelForm from '@/components/departments/HotelForm';
 import BarInventory from '@/components/departments/BarInventory';
 import { Department } from '@/types/departments';
 
+const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
+
 const Dashboard = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
 
