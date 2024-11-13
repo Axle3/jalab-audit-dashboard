@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import LaundryForm from '@/components/departments/LaundryForm';
 import HotelForm from '@/components/departments/HotelForm';
 import BarInventory from '@/components/departments/BarInventory';
+import DepartmentAnalytics from '@/components/analytics/DepartmentAnalytics';
 import { Department } from '@/types/departments';
 
 const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
@@ -13,13 +14,33 @@ const Dashboard = () => {
   const renderDepartmentContent = () => {
     switch (selectedDepartment) {
       case 'laundry':
-        return <LaundryForm />;
+        return (
+          <div className="space-y-6">
+            <LaundryForm />
+            <DepartmentAnalytics department="laundry" />
+          </div>
+        );
       case 'hotel':
-        return <HotelForm />;
+        return (
+          <div className="space-y-6">
+            <HotelForm />
+            <DepartmentAnalytics department="hotel" />
+          </div>
+        );
       case 'restaurant':
-        return <HotelForm />;
+        return (
+          <div className="space-y-6">
+            <HotelForm />
+            <DepartmentAnalytics department="restaurant" />
+          </div>
+        );
       case 'bar':
-        return <BarInventory />;
+        return (
+          <div className="space-y-6">
+            <BarInventory />
+            <DepartmentAnalytics department="bar" />
+          </div>
+        );
       default:
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
