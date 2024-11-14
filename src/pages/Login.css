@@ -1,0 +1,50 @@
+.login-container {
+  @apply min-h-screen flex items-center justify-center bg-background px-4;
+  background-image: linear-gradient(to bottom right, rgba(155, 135, 245, 0.1), rgba(126, 105, 171, 0.1));
+}
+
+.login-card {
+  @apply w-full max-w-md;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.login-header {
+  @apply space-y-2 text-center;
+}
+
+.login-title {
+  @apply text-3xl font-bold tracking-tight;
+  background: linear-gradient(to right, #9b87f5, #7E69AB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-subtitle {
+  @apply text-sm text-muted-foreground;
+}
+
+.login-form {
+  @apply space-y-4 mt-4;
+}
+
+.login-input {
+  @apply w-full transition-colors duration-200;
+}
+
+.login-input:focus {
+  @apply ring-2 ring-primary/50;
+}
+
+.login-button {
+  @apply w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors;
+}
+
+.dark .login-card {
+  @apply bg-card border-border;
+}
+
+.dark .login-title {
+  background: linear-gradient(to right, #b4a4f7, #9b87f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

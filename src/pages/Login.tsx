@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+import './Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -28,25 +29,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 transition-colors duration-300">
-      <Card className="w-full max-w-md animate-in">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            JALAB NIG LTD
-          </CardTitle>
-          <p className="text-sm text-muted-foreground text-center">
+    <div className="login-container">
+      <Card className="login-card">
+        <CardHeader className="login-header">
+          <h1 className="login-title">JALAB NIG LTD</h1>
+          <p className="login-subtitle">
             Enter your credentials to access the system
           </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="login-form">
             <div className="space-y-2">
               <Input
                 type="text"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full"
+                className="login-input"
               />
             </div>
             <div className="space-y-2">
@@ -55,10 +54,10 @@ const Login = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full"
+                className="login-input"
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="login-button">
               Sign In
             </Button>
           </form>
