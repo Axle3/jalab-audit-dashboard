@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { Moon, PlusCircle, Sun, Users } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -9,10 +10,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { PlusCircle, Users } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -21,10 +21,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  };
 
   const handleCreateUser = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would make an API call
     toast({
       title: "User Created",
       description: `New user "${newUsername}" has been created successfully.`,
@@ -34,8 +49,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <header className="bg-card shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <h1 className="text-xl font-semibold">JALAB NIG LTD</h1>
@@ -101,7 +116,19 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </NavigationMenu>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">Welcome, {user?.username}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="rounded-full"
+            >
+              {theme === 'light' ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+            </Button>
+            <span className="text-sm text-muted-foreground">Welcome, {user?.username}</span>
             <Button
               variant="outline"
               onClick={() => {
