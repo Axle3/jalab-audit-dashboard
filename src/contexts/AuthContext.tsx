@@ -5,6 +5,8 @@ import { useToast } from '@/components/ui/use-toast';
 interface AuthContextType extends AuthState {
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  createUser: (username: string, password: string) => Promise<void>;
+  users: User[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -14,20 +16,42 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user: null,
     isAuthenticated: false,
   });
+  const [users, setUsers] = useState<User[]>([
+    { id: '1', username: 'admin', password: 'Jalab2011', role: 'admin' }
+  ]);
   const { toast } = useToast();
 
+  console.log('Current users:', users); // For debugging
+
+  const createUser = async (username: string, password: string) => {
+    console.log('Creating user:', username); // For debugging
+    const newUser: User = {
+      id: (users.length + 1).toString(),
+      username,
+      password,
+      role: 'user'
+    };
+    setUsers([...users, newUser]);
+    toast({
+      title: "User Created",
+      description: `New user "${username}" has been created successfully.`,
+    });
+  };
+
   const login = async (username: string, password: string) => {
-    if (username === 'admin' && password === 'Jalab2011') {
+    console.log('Login attempt:', username); // For debugging
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if (user) {
       setAuth({
-        user: { id: '1', username: 'admin', role: 'admin' },
+        user: { id: user.id, username: user.username, role: user.role },
         isAuthenticated: true,
       });
       toast({
-        title: 'Welcome back, Admin!',
+        title: `Welcome back, ${user.username}!`,
         description: 'You have successfully logged in.',
       });
     } else {
-      // In a real app, this would be an API call
       throw new Error('Invalid credentials');
     }
   };
@@ -41,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ ...auth, login, logout }}>
+    <AuthContext.Provider value={{ ...auth, login, logout, createUser, users }}>
       {children}
     </AuthContext.Provider>
   );
