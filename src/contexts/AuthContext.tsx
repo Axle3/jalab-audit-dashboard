@@ -25,13 +25,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const createUser = async (username: string, password: string) => {
     console.log('Creating user:', username); // For debugging
+    // Check if username already exists
+    if (users.find(u => u.username === username)) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Username already exists.",
+      });
+      throw new Error('Username already exists');
+    }
+
     const newUser: User = {
       id: (users.length + 1).toString(),
       username,
       password,
       role: 'user'
     };
-    setUsers([...users, newUser]);
+    
+    setUsers(prevUsers => {
+      const updatedUsers = [...prevUsers, newUser];
+      // Store in localStorage for persistence
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      return updatedUsers;
+    });
+
     toast({
       title: "User Created",
       description: `New user "${username}" has been created successfully.`,
@@ -40,7 +57,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     console.log('Login attempt:', username); // For debugging
+    
+    // First check if it's the admin
+    if (username === 'admin' && password === 'Jalab2011') {
+      setAuth({
+        user: { id: '1', username: 'admin', role: 'admin' },
+        isAuthenticated: true,
+      });
+      toast({
+        title: "Welcome Admin",
+        description: "You have successfully logged in.",
+      });
+      return;
+    }
+
+    // Then check for regular users
     const user = users.find(u => u.username === username && u.password === password);
+    console.log('Found user:', user); // For debugging
     
     if (user) {
       setAuth({
@@ -48,10 +81,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAuthenticated: true,
       });
       toast({
-        title: `Welcome back, ${user.username}!`,
+        title: `Welcome ${user.username}!`,
         description: 'You have successfully logged in.',
       });
     } else {
+      console.log('Login failed: Invalid credentials'); // For debugging
       throw new Error('Invalid credentials');
     }
   };
