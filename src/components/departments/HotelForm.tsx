@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
+import { saveRecord } from '@/utils/indexedDB';
 
 const HotelForm = () => {
   const [cash, setCash] = useState('');
@@ -14,13 +15,44 @@ const HotelForm = () => {
   const [debtorLocation, setDebtorLocation] = useState('');
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const total = Number(cash) + Number(pos) + Number(transfer) + Number(debt);
-    toast({
-      title: "Record Saved",
-      description: `Total amount: ₦${total.toLocaleString()}`,
-    });
+    
+    try {
+      const record = {
+        date: new Date().toISOString(),
+        department: 'hotel',
+        cash: Number(cash),
+        pos: Number(pos),
+        transfer: Number(transfer),
+        debt: Number(debt),
+        debtorName,
+        debtorLocation,
+        total
+      };
+
+      await saveRecord('records', record);
+
+      toast({
+        title: "Record Saved",
+        description: `Total amount: ₦${total.toLocaleString()}`,
+      });
+
+      // Reset form
+      setCash('');
+      setPos('');
+      setTransfer('');
+      setDebt('');
+      setDebtorName('');
+      setDebtorLocation('');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save record. Please try again.",
+      });
+    }
   };
 
   return (
