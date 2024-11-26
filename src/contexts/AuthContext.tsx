@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AuthState, User } from '@/types/auth';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -12,20 +12,36 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [auth, setAuth] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
+  const [auth, setAuth] = useState<AuthState>(() => {
+    // Try to get auth state from localStorage
+    const savedAuth = localStorage.getItem('authState');
+    return savedAuth ? JSON.parse(savedAuth) : {
+      user: null,
+      isAuthenticated: false,
+    };
   });
-  const [users, setUsers] = useState<User[]>([
-    { id: '1', username: 'admin', password: 'Jalab2011', role: 'admin' }
-  ]);
+
+  const [users, setUsers] = useState<User[]>(() => {
+    // Try to get users from localStorage
+    const savedUsers = localStorage.getItem('users');
+    return savedUsers ? JSON.parse(savedUsers) : [
+      { id: '1', username: 'admin', password: 'Jalab2011', role: 'admin' }
+    ];
+  });
+
   const { toast } = useToast();
 
-  console.log('Current users:', users); // For debugging
+  // Save auth state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('authState', JSON.stringify(auth));
+  }, [auth]);
+
+  // Save users to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('users', JSON.stringify(users));
+  }, [users]);
 
   const createUser = async (username: string, password: string) => {
-    console.log('Creating user:', username); // For debugging
-    // Check if username already exists
     if (users.find(u => u.username === username)) {
       toast({
         variant: "destructive",
@@ -42,13 +58,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       role: 'user'
     };
     
-    setUsers(prevUsers => {
-      const updatedUsers = [...prevUsers, newUser];
-      // Store in localStorage for persistence
-      localStorage.setItem('users', JSON.stringify(updatedUsers));
-      return updatedUsers;
-    });
-
+    setUsers(prevUsers => [...prevUsers, newUser]);
+    
     toast({
       title: "User Created",
       description: `New user "${username}" has been created successfully.`,
@@ -56,12 +67,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const login = async (username: string, password: string) => {
-    console.log('Login attempt:', username); // For debugging
-    
     // First check if it's the admin
     if (username === 'admin' && password === 'Jalab2011') {
+      const adminUser = { id: '1', username: 'admin', role: 'admin' as const };
       setAuth({
-        user: { id: '1', username: 'admin', role: 'admin' },
+        user: adminUser,
         isAuthenticated: true,
       });
       toast({
@@ -73,7 +83,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Then check for regular users
     const user = users.find(u => u.username === username && u.password === password);
-    console.log('Found user:', user); // For debugging
     
     if (user) {
       setAuth({
@@ -85,7 +94,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description: 'You have successfully logged in.',
       });
     } else {
-      console.log('Login failed: Invalid credentials'); // For debugging
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Invalid credentials.",
+      });
       throw new Error('Invalid credentials');
     }
   };
