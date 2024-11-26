@@ -1,0 +1,16 @@
+{
+  "name": "JALAB NIG LTD",
+  "short_name": "JALAB",
+  "description": "JALAB Management System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7E69AB",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
