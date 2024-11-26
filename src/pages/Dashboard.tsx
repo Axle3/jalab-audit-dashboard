@@ -7,11 +7,11 @@ import BarInventory from '@/components/departments/BarInventory';
 import ExpensesForm from '@/components/departments/ExpensesForm';
 import DepartmentAnalytics from '@/components/analytics/DepartmentAnalytics';
 import MonthlySummary from '@/components/analytics/MonthlySummary';
+import ExportControls from '@/components/ExportControls';
 import { Department } from '@/types/departments';
 import { ArrowLeft, BarChart3, Building2, Receipt, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
+import { RecordData } from '@/utils/csvExport';
 
 // Mock data for previous records
 const mockPreviousRecords = [
@@ -23,8 +23,17 @@ const mockPreviousRecords = [
   { id: 6, department: 'laundry', date: '2024-03-14', revenue: 52000 },
 ];
 
+const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
+
 const Dashboard = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+
+  // Convert mockPreviousRecords to RecordData format for ExportControls
+  const exportData: RecordData[] = mockPreviousRecords.map(record => ({
+    date: record.date,
+    department: record.department,
+    revenue: record.revenue,
+  }));
 
   const getDepartmentIcon = (dept: Department) => {
     switch (dept) {
@@ -74,6 +83,7 @@ const Dashboard = () => {
       default:
         return (
           <div className="space-y-8 animate-fadeIn">
+            <ExportControls data={exportData} />
             <MonthlySummary />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {departments.map((dept) => (
