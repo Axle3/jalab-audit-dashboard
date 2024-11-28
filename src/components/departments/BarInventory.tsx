@@ -13,6 +13,7 @@ const BarInventory = () => {
     price: '',
     currentStock: '',
   });
+  const [stockToAdd, setStockToAdd] = useState<{ [key: string]: string }>({});
   const { toast } = useToast();
 
   const handleAddDrink = (e: React.FormEvent) => {
@@ -29,7 +30,7 @@ const BarInventory = () => {
     setNewDrink({ name: '', price: '', currentStock: '' });
     toast({
       title: "Drink Added",
-      description: `${drink.name} has been added to inventory`,
+      description: `${drink.name} has been added to inventory with initial stock of ${drink.currentStock} units`,
     });
   };
 
@@ -41,11 +42,41 @@ const BarInventory = () => {
           ...drink,
           previousStock: drink.currentStock,
           currentStock: newStock,
-          unitsSold,
+          unitsSold: drink.unitsSold + unitsSold,
         };
       }
       return drink;
     }));
+  };
+
+  const handleAddStock = (id: string) => {
+    const additionalStock = Number(stockToAdd[id] || 0);
+    if (additionalStock <= 0) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Stock Amount",
+        description: "Please enter a valid number of units to add",
+      });
+      return;
+    }
+
+    setDrinks(drinks.map(drink => {
+      if (drink.id === id) {
+        const newStock = drink.currentStock + additionalStock;
+        return {
+          ...drink,
+          previousStock: drink.currentStock,
+          currentStock: newStock,
+        };
+      }
+      return drink;
+    }));
+
+    setStockToAdd({ ...stockToAdd, [id]: '' });
+    toast({
+      title: "Stock Added",
+      description: `Added ${additionalStock} units to inventory`,
+    });
   };
 
   const totalSales = drinks.reduce((total, drink) => {
@@ -68,6 +99,7 @@ const BarInventory = () => {
                   value={newDrink.name}
                   onChange={(e) => setNewDrink({ ...newDrink, name: e.target.value })}
                   placeholder="Enter drink name"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -78,6 +110,7 @@ const BarInventory = () => {
                   value={newDrink.price}
                   onChange={(e) => setNewDrink({ ...newDrink, price: e.target.value })}
                   placeholder="Enter price"
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -88,6 +121,7 @@ const BarInventory = () => {
                   value={newDrink.currentStock}
                   onChange={(e) => setNewDrink({ ...newDrink, currentStock: e.target.value })}
                   placeholder="Enter initial stock"
+                  required
                 />
               </div>
             </div>
@@ -108,6 +142,7 @@ const BarInventory = () => {
                 <TableHead>Price</TableHead>
                 <TableHead>Previous Stock</TableHead>
                 <TableHead>Current Stock</TableHead>
+                <TableHead>Add Stock</TableHead>
                 <TableHead>Units Sold</TableHead>
                 <TableHead>Sales Amount</TableHead>
               </TableRow>
@@ -125,6 +160,21 @@ const BarInventory = () => {
                       onChange={(e) => handleUpdateStock(drink.id, Number(e.target.value))}
                       className="w-20"
                     />
+                  </TableCell>
+                  <TableCell className="space-x-2">
+                    <Input
+                      type="number"
+                      value={stockToAdd[drink.id] || ''}
+                      onChange={(e) => setStockToAdd({ ...stockToAdd, [drink.id]: e.target.value })}
+                      className="w-20 inline-block"
+                      placeholder="Units"
+                    />
+                    <Button 
+                      onClick={() => handleAddStock(drink.id)}
+                      size="sm"
+                    >
+                      Add
+                    </Button>
                   </TableCell>
                   <TableCell>{drink.unitsSold}</TableCell>
                   <TableCell>₦{(drink.unitsSold * drink.price).toLocaleString()}</TableCell>
