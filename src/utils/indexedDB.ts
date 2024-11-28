@@ -1,3 +1,5 @@
+import { DrinkStock } from '@/types/departments';
+
 const DB_NAME = 'jalabDB';
 const DB_VERSION = 1;
 
@@ -32,7 +34,6 @@ export const initDB = (): Promise<IDBDatabase> => {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
       
-      // Create stores for different types of data
       if (!db.objectStoreNames.contains('records')) {
         const recordsStore = db.createObjectStore('records', { keyPath: 'id', autoIncrement: true });
         recordsStore.createIndex('by-date', 'date');
@@ -48,6 +49,32 @@ export const initDB = (): Promise<IDBDatabase> => {
         barInventoryStore.createIndex('by-date', 'date');
       }
     };
+  });
+};
+
+export const clearAllRecords = async (): Promise<void> => {
+  const db = await initDB();
+  const stores = ['records', 'expenses', 'barInventory'];
+  
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(stores, 'readwrite');
+    let completed = 0;
+
+    stores.forEach(storeName => {
+      const store = transaction.objectStore(storeName);
+      const request = store.clear();
+
+      request.onsuccess = () => {
+        completed++;
+        if (completed === stores.length) {
+          resolve();
+        }
+      };
+
+      request.onerror = () => reject(request.error);
+    });
+
+    transaction.onerror = () => reject(transaction.error);
   });
 };
 

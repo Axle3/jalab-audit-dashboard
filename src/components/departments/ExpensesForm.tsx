@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Department } from '@/types/departments';
+import { saveRecord, clearAllRecords } from '@/utils/indexedDB';
 
 const ExpensesForm = () => {
   const [amount, setAmount] = useState('');
@@ -13,14 +14,46 @@ const ExpensesForm = () => {
   const [department, setDepartment] = useState<Department>('hotel');
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Expense Recorded",
-      description: `₦${Number(amount).toLocaleString()} expense recorded for ${department} department.`,
-    });
-    setAmount('');
-    setDescription('');
+    try {
+      await saveRecord('expenses', {
+        amount: Number(amount),
+        description,
+        department,
+        date: new Date().toISOString()
+      });
+
+      toast({
+        title: "Expense Recorded",
+        description: `₦${Number(amount).toLocaleString()} expense recorded for ${department} department.`,
+      });
+      
+      setAmount('');
+      setDescription('');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save expense. Please try again.",
+      });
+    }
+  };
+
+  const handleClearRecords = async () => {
+    try {
+      await clearAllRecords();
+      toast({
+        title: "Records Cleared",
+        description: "All records have been cleared successfully.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to clear records. Please try again.",
+      });
+    }
   };
 
   return (
@@ -65,7 +98,17 @@ const ExpensesForm = () => {
               required
             />
           </div>
-          <Button type="submit" className="w-full">Record Expense</Button>
+          <div className="flex gap-4">
+            <Button type="submit" className="flex-1">Record Expense</Button>
+            <Button 
+              type="button" 
+              variant="destructive" 
+              onClick={handleClearRecords}
+              className="flex-1"
+            >
+              Clear All Records
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
