@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 import { DrinkStock } from '@/types/departments';
+import { saveRecord } from '@/utils/indexedDB';
+import { Trash2 } from 'lucide-react';
 
 const BarInventory = () => {
   const [drinks, setDrinks] = useState<DrinkStock[]>([]);
@@ -16,18 +18,27 @@ const BarInventory = () => {
   const [stockToAdd, setStockToAdd] = useState<{ [key: string]: string }>({});
   const { toast } = useToast();
 
-  const handleAddDrink = (e: React.FormEvent) => {
+  const handleAddDrink = async (e: React.FormEvent) => {
     e.preventDefault();
     const initialStock = Number(newDrink.currentStock);
     const drink: DrinkStock = {
       id: Date.now().toString(),
       name: newDrink.name,
       price: Number(newDrink.price),
-      previousStock: initialStock, // This is the initial stock that will remain static
+      previousStock: initialStock,
       currentStock: initialStock,
       unitsSold: 0,
     };
-    setDrinks([...drinks, drink]);
+    
+    const updatedDrinks = [...drinks, drink];
+    setDrinks(updatedDrinks);
+    
+    // Save daily record
+    await saveRecord('barInventory', {
+      date: new Date().toISOString(),
+      drinks: updatedDrinks
+    });
+
     setNewDrink({ name: '', price: '', currentStock: '' });
     toast({
       title: "Drink Added",
@@ -35,10 +46,9 @@ const BarInventory = () => {
     });
   };
 
-  const handleUpdateStock = (id: string, newStock: number) => {
-    setDrinks(drinks.map(drink => {
+  const handleUpdateStock = async (id: string, newStock: number) => {
+    const updatedDrinks = drinks.map(drink => {
       if (drink.id === id) {
-        // Calculate units sold based on the difference between initial stock and current stock
         const unitsSold = drink.previousStock - newStock;
         return {
           ...drink,
@@ -47,10 +57,18 @@ const BarInventory = () => {
         };
       }
       return drink;
-    }));
+    });
+    
+    setDrinks(updatedDrinks);
+    
+    // Save daily record
+    await saveRecord('barInventory', {
+      date: new Date().toISOString(),
+      drinks: updatedDrinks
+    });
   };
 
-  const handleAddStock = (id: string) => {
+  const handleAddStock = async (id: string) => {
     const additionalStock = Number(stockToAdd[id] || 0);
     if (additionalStock <= 0) {
       toast({
@@ -61,22 +79,45 @@ const BarInventory = () => {
       return;
     }
 
-    setDrinks(drinks.map(drink => {
+    const updatedDrinks = drinks.map(drink => {
       if (drink.id === id) {
         const newStock = drink.currentStock + additionalStock;
         return {
           ...drink,
           currentStock: newStock,
-          // Previous stock remains unchanged as it represents the initial stock
         };
       }
       return drink;
-    }));
+    });
 
+    setDrinks(updatedDrinks);
     setStockToAdd({ ...stockToAdd, [id]: '' });
+    
+    // Save daily record
+    await saveRecord('barInventory', {
+      date: new Date().toISOString(),
+      drinks: updatedDrinks
+    });
+
     toast({
       title: "Stock Added",
       description: `Added ${additionalStock} units to inventory`,
+    });
+  };
+
+  const handleDeleteDrink = async (id: string) => {
+    const updatedDrinks = drinks.filter(drink => drink.id !== id);
+    setDrinks(updatedDrinks);
+    
+    // Save daily record
+    await saveRecord('barInventory', {
+      date: new Date().toISOString(),
+      drinks: updatedDrinks
+    });
+
+    toast({
+      title: "Drink Deleted",
+      description: "The drink has been removed from inventory",
     });
   };
 
@@ -146,6 +187,7 @@ const BarInventory = () => {
                 <TableHead>Add Stock</TableHead>
                 <TableHead>Units Sold</TableHead>
                 <TableHead>Sales Amount</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -179,6 +221,15 @@ const BarInventory = () => {
                   </TableCell>
                   <TableCell>{drink.unitsSold}</TableCell>
                   <TableCell>₦{(drink.unitsSold * drink.price).toLocaleString()}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => handleDeleteDrink(drink.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
