@@ -13,27 +13,11 @@ import { ArrowLeft, BarChart3, Building2, Receipt, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RecordData } from '@/utils/csvExport';
 
-// Mock data for previous records
-const mockPreviousRecords = [
-  { id: 1, department: 'hotel', date: '2024-03-15', revenue: 250000 },
-  { id: 2, department: 'laundry', date: '2024-03-15', revenue: 45000 },
-  { id: 3, department: 'restaurant', date: '2024-03-15', revenue: 180000 },
-  { id: 4, department: 'bar', date: '2024-03-15', revenue: 95000 },
-  { id: 5, department: 'hotel', date: '2024-03-14', revenue: 280000 },
-  { id: 6, department: 'laundry', date: '2024-03-14', revenue: 52000 },
-];
-
 const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
 
 const Dashboard = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
-
-  // Convert mockPreviousRecords to RecordData format for ExportControls
-  const exportData: RecordData[] = mockPreviousRecords.map(record => ({
-    date: record.date,
-    department: record.department,
-    revenue: record.revenue,
-  }));
+  const exportData: RecordData[] = []; // Empty array for export data
 
   const getDepartmentIcon = (dept: Department) => {
     switch (dept) {
@@ -105,34 +89,29 @@ const Dashboard = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <ExpensesForm />
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Records</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Department</TableHead>
-                        <TableHead className="text-right">Revenue</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {mockPreviousRecords.map((record) => (
-                        <TableRow key={record.id}>
-                          <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
-                          <TableCell className="capitalize">{record.department}</TableCell>
-                          <TableCell className="text-right">₦{record.revenue.toLocaleString()}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Records</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Department</TableHead>
+                      <TableHead className="text-right">Revenue</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center text-muted-foreground">
+                        No records available
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </div>
         );
     }

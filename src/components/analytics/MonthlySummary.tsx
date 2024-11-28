@@ -3,17 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Department } from '@/types/departments';
 
-// Mock data - in a real app, this would come from your backend
-const mockMonthlySummary = {
-  hotel: { sales: 2500000, expenses: 1200000 },
-  laundry: { sales: 800000, expenses: 300000 },
-  restaurant: { sales: 1500000, expenses: 900000 },
-  bar: { sales: 1200000, expenses: 600000 },
-};
-
 const MonthlySummary = () => {
   const currentMonth = new Date().toLocaleString('default', { month: 'long' });
   const departments: Department[] = ['hotel', 'laundry', 'restaurant', 'bar'];
+
+  // Initialize empty summary data
+  const emptySummary = {
+    sales: 0,
+    expenses: 0
+  };
 
   return (
     <Card>
@@ -32,7 +30,7 @@ const MonthlySummary = () => {
           </TableHeader>
           <TableBody>
             {departments.map((dept) => {
-              const summary = mockMonthlySummary[dept];
+              const summary = emptySummary;
               const profit = summary.sales - summary.expenses;
               const isProfitable = profit > 0;
 
