@@ -1,20 +1,19 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 interface AnalyticsProps {
   department: string;
 }
 
 const mockData = [
-  { name: 'Mon', amount: 2400 },
-  { name: 'Tue', amount: 1398 },
-  { name: 'Wed', amount: 9800 },
-  { name: 'Thu', amount: 3908 },
-  { name: 'Fri', amount: 4800 },
-  { name: 'Sat', amount: 3800 },
-  { name: 'Sun', amount: 4300 },
+  { name: 'Sales', value: 9800 },
+  { name: 'Expenses', value: 4800 },
+  { name: 'Revenue', value: 5000 },
+  { name: 'Profit', value: 3800 },
 ];
+
+const COLORS = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9'];
 
 const DepartmentAnalytics: React.FC<AnalyticsProps> = ({ department }) => {
   return (
@@ -26,16 +25,24 @@ const DepartmentAnalytics: React.FC<AnalyticsProps> = ({ department }) => {
         <CardContent>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockData}>
-                <XAxis dataKey="name" />
-                <YAxis />
+              <PieChart>
+                <Pie
+                  data={mockData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {mockData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
                 <Tooltip />
-                <Bar
-                  dataKey="amount"
-                  fill="hsl(var(--primary))"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
+                <Legend />
+              </PieChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
