@@ -12,6 +12,14 @@ interface DBSchema {
     value: any;
     indexes: { "by-department": string };
   };
+  barInventory: {
+    key: string;
+    value: {
+      date: string;
+      drinks: DrinkStock[];
+    };
+    indexes: { "by-date": string };
+  };
 }
 
 export const initDB = (): Promise<IDBDatabase> => {
@@ -33,6 +41,11 @@ export const initDB = (): Promise<IDBDatabase> => {
       if (!db.objectStoreNames.contains('expenses')) {
         const expensesStore = db.createObjectStore('expenses', { keyPath: 'id', autoIncrement: true });
         expensesStore.createIndex('by-department', 'department');
+      }
+
+      if (!db.objectStoreNames.contains('barInventory')) {
+        const barInventoryStore = db.createObjectStore('barInventory', { keyPath: 'date' });
+        barInventoryStore.createIndex('by-date', 'date');
       }
     };
   });
