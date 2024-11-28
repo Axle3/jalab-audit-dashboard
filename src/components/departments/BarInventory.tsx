@@ -18,12 +18,13 @@ const BarInventory = () => {
 
   const handleAddDrink = (e: React.FormEvent) => {
     e.preventDefault();
+    const initialStock = Number(newDrink.currentStock);
     const drink: DrinkStock = {
       id: Date.now().toString(),
       name: newDrink.name,
       price: Number(newDrink.price),
-      previousStock: Number(newDrink.currentStock),
-      currentStock: Number(newDrink.currentStock),
+      previousStock: initialStock, // This is the initial stock that will remain static
+      currentStock: initialStock,
       unitsSold: 0,
     };
     setDrinks([...drinks, drink]);
@@ -37,12 +38,12 @@ const BarInventory = () => {
   const handleUpdateStock = (id: string, newStock: number) => {
     setDrinks(drinks.map(drink => {
       if (drink.id === id) {
+        // Calculate units sold based on the difference between initial stock and current stock
         const unitsSold = drink.previousStock - newStock;
         return {
           ...drink,
-          previousStock: drink.currentStock,
           currentStock: newStock,
-          unitsSold: drink.unitsSold + unitsSold,
+          unitsSold: unitsSold >= 0 ? unitsSold : 0,
         };
       }
       return drink;
@@ -65,8 +66,8 @@ const BarInventory = () => {
         const newStock = drink.currentStock + additionalStock;
         return {
           ...drink,
-          previousStock: drink.currentStock,
           currentStock: newStock,
+          // Previous stock remains unchanged as it represents the initial stock
         };
       }
       return drink;
@@ -140,7 +141,7 @@ const BarInventory = () => {
               <TableRow>
                 <TableHead>Drink Name</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Previous Stock</TableHead>
+                <TableHead>Initial Stock</TableHead>
                 <TableHead>Current Stock</TableHead>
                 <TableHead>Add Stock</TableHead>
                 <TableHead>Units Sold</TableHead>
