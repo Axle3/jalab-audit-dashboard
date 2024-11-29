@@ -3,25 +3,6 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/favicon.ico',
-  '/manifest.json'
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((
-
-To make the web app work offline, we'll need to implement a Service Worker and configure the necessary caching strategies. We'll also need to add a manifest file for PWA support.
-
-<lov-code>
-First, let's create the service worker file:
-
-<lov-write file_path="public/sw.js">
-const CACHE_NAME = 'jalab-cache-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/favicon.ico',
   '/manifest.json',
   '/og-image.svg',
   '/placeholder.svg'

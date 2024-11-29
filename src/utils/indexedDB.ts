@@ -1,5 +1,3 @@
-import { DrinkStock } from '@/types/departments';
-
 const DB_NAME = 'jalabDB';
 const DB_VERSION = 1;
 
@@ -85,7 +83,21 @@ export const saveRecord = async (storeName: keyof DBSchema, data: any): Promise<
     const store = transaction.objectStore(storeName);
     const request = store.add(data);
 
-    request.onsuccess = () => resolve();
+    request.onsuccess = () => {
+      // Create a backup file
+      const backupData = JSON.stringify(data);
+      const blob = new Blob([backupData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      a.href = url;
+      a.download = `${storeName}-backup-${timestamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      resolve();
+    };
     request.onerror = () => reject(request.error);
   });
 };
