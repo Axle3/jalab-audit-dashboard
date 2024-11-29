@@ -11,9 +11,10 @@ import { Trash2, Save } from 'lucide-react';
 interface InventoryTableProps {
   drinks: DrinkStock[];
   onDrinksUpdate: (drinks: DrinkStock[]) => void;
+  isAdmin: boolean;
 }
 
-const InventoryTable = ({ drinks, onDrinksUpdate }: InventoryTableProps) => {
+const InventoryTable = ({ drinks, onDrinksUpdate, isAdmin }: InventoryTableProps) => {
   const [stockToAdd, setStockToAdd] = useState<{ [key: string]: string }>({});
   const { toast } = useToast();
 
@@ -34,6 +35,8 @@ const InventoryTable = ({ drinks, onDrinksUpdate }: InventoryTableProps) => {
   };
 
   const handleAddStock = async (id: string) => {
+    if (!isAdmin) return;
+    
     const additionalStock = Number(stockToAdd[id] || 0);
     if (additionalStock <= 0) {
       toast({
@@ -60,22 +63,21 @@ const InventoryTable = ({ drinks, onDrinksUpdate }: InventoryTableProps) => {
   };
 
   const handleDeleteDrink = async (id: string) => {
+    if (!isAdmin) return;
     const updatedDrinks = drinks.filter(drink => drink.id !== id);
     onDrinksUpdate(updatedDrinks);
   };
 
   const handleSaveDailyRecord = async () => {
-    // Save current record
     await saveRecord('barInventory', {
       date: new Date().toISOString(),
       drinks: drinks
     });
 
-    // Prepare drinks for the next day
     const nextDayDrinks = drinks.map(drink => ({
       ...drink,
-      previousStock: drink.currentStock, // Current stock becomes previous stock
-      unitsSold: 0 // Reset units sold for the new day
+      previousStock: drink.currentStock,
+      unitsSold: 0
     }));
 
     onDrinksUpdate(nextDayDrinks);
@@ -110,10 +112,10 @@ const InventoryTable = ({ drinks, onDrinksUpdate }: InventoryTableProps) => {
               <TableHead>Price</TableHead>
               <TableHead>Initial Stock</TableHead>
               <TableHead>Current Stock</TableHead>
-              <TableHead>Add Stock</TableHead>
+              {isAdmin && <TableHead>Add Stock</TableHead>}
               <TableHead>Units Sold</TableHead>
               <TableHead>Sales Amount</TableHead>
-              <TableHead>Actions</TableHead>
+              {isAdmin && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -130,32 +132,36 @@ const InventoryTable = ({ drinks, onDrinksUpdate }: InventoryTableProps) => {
                     className="w-20"
                   />
                 </TableCell>
-                <TableCell className="space-x-2">
-                  <Input
-                    type="number"
-                    value={stockToAdd[drink.id] || ''}
-                    onChange={(e) => setStockToAdd({ ...stockToAdd, [drink.id]: e.target.value })}
-                    className="w-20 inline-block"
-                    placeholder="Units"
-                  />
-                  <Button 
-                    onClick={() => handleAddStock(drink.id)}
-                    size="sm"
-                  >
-                    Add
-                  </Button>
-                </TableCell>
+                {isAdmin && (
+                  <TableCell className="space-x-2">
+                    <Input
+                      type="number"
+                      value={stockToAdd[drink.id] || ''}
+                      onChange={(e) => setStockToAdd({ ...stockToAdd, [drink.id]: e.target.value })}
+                      className="w-20 inline-block"
+                      placeholder="Units"
+                    />
+                    <Button 
+                      onClick={() => handleAddStock(drink.id)}
+                      size="sm"
+                    >
+                      Add
+                    </Button>
+                  </TableCell>
+                )}
                 <TableCell>{drink.unitsSold}</TableCell>
                 <TableCell>₦{(drink.unitsSold * drink.price).toLocaleString()}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => handleDeleteDrink(drink.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+                {isAdmin && (
+                  <TableCell>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => handleDeleteDrink(drink.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
