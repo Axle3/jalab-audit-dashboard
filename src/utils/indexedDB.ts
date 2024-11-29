@@ -16,7 +16,11 @@ interface DBSchema {
     key: string;
     value: {
       date: string;
-      drinks: DrinkStock[];
+      drinks: Array<{
+        name: string;
+        quantity: number;
+        price: number;
+      }>;
     };
     indexes: { "by-date": string };
   };

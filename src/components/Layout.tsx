@@ -16,11 +16,12 @@ import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { logout, user } = useAuth();
+  const { logout, user, createUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
@@ -38,14 +39,22 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  const handleCreateUser = (e: React.FormEvent) => {
+  const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "User Created",
-      description: `New user "${newUsername}" has been created successfully.`,
-    });
-    setNewUsername('');
-    setNewPassword('');
+    try {
+      await createUser(newUsername, newPassword);
+      setNewUsername('');
+      setNewPassword('');
+      setIsSheetOpen(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message,
+        });
+      }
+    }
   };
 
   return (
@@ -63,7 +72,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="p-4 w-[400px] space-y-4">
-                      <Sheet>
+                      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                         <SheetTrigger asChild>
                           <Button variant="outline" className="w-full">
                             <PlusCircle className="w-4 h-4 mr-2" />
