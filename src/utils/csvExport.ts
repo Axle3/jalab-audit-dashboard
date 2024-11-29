@@ -3,19 +3,23 @@ import { saveAs } from 'file-saver';
 export interface RecordData {
   date: string;
   department: string;
-  revenue: number;
-  expenses?: number;
+  cash?: number;
+  pos?: number;
+  transfer?: number;
+  total?: number;
 }
 
 export const generateCSV = (data: RecordData[], filename: string) => {
-  const headers = ['Date', 'Department', 'Revenue', 'Expenses'];
+  const headers = ['Date', 'Department', 'Cash', 'POS', 'Transfer', 'Total'];
   const csvContent = [
     headers.join(','),
     ...data.map(record => [
       record.date,
       record.department,
-      record.revenue,
-      record.expenses || 0
+      record.cash || 0,
+      record.pos || 0,
+      record.transfer || 0,
+      record.total || 0
     ].join(','))
   ].join('\n');
 
