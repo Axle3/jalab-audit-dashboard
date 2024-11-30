@@ -34,29 +34,40 @@ const DepartmentAnalytics: React.FC<AnalyticsProps> = ({ department }) => {
                 <TableHead>Cash</TableHead>
                 <TableHead>POS</TableHead>
                 <TableHead>Transfer</TableHead>
+                <TableHead>Debt</TableHead>
+                <TableHead>Debtors</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">
+                  <TableCell colSpan={7} className="text-center">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center text-muted-foreground">
                     No records available
                   </TableCell>
                 </TableRow>
               ) : (
-                data.map((record: DailyRecord) => (
+                data.map((record: any) => (
                   <TableRow key={record.id}>
                     <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
                     <TableCell>₦{record.cash.toLocaleString()}</TableCell>
                     <TableCell>₦{record.pos.toLocaleString()}</TableCell>
                     <TableCell>₦{record.transfer.toLocaleString()}</TableCell>
+                    <TableCell>₦{record.debt.toLocaleString()}</TableCell>
+                    <TableCell>
+                      {record.debtors?.map((debtor: any, index: number) => (
+                        <div key={index} className="text-sm">
+                          <p><strong>{debtor.name}</strong> - ₦{debtor.amount.toLocaleString()}</p>
+                          <p className="text-muted-foreground">{debtor.location}</p>
+                        </div>
+                      ))}
+                    </TableCell>
                     <TableCell className="text-right">₦{record.total.toLocaleString()}</TableCell>
                   </TableRow>
                 ))
