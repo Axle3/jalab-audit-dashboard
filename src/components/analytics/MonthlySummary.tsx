@@ -39,12 +39,13 @@ const MonthlySummary = () => {
     const departmentRecords = records.filter((record: any) => record.department === department);
     const departmentExpenses = expenses.filter((expense: any) => expense.department === department);
 
-    const totalSales = departmentRecords.reduce((sum: number, record: any) => sum + record.total, 0);
-    const totalExpenses = departmentExpenses.reduce((sum: number, expense: any) => sum + expense.amount, 0);
+    const totalSales = departmentRecords.reduce((sum: number, record: any) => sum + (record.total || 0), 0);
+    const totalExpenses = departmentExpenses.reduce((sum: number, expense: any) => sum + (expense.amount || 0), 0);
 
     return {
       sales: totalSales,
-      expenses: totalExpenses
+      expenses: totalExpenses,
+      profit: totalSales - totalExpenses
     };
   };
 
@@ -66,8 +67,7 @@ const MonthlySummary = () => {
           <TableBody>
             {departments.map((dept) => {
               const summary = calculateDepartmentSummary(dept);
-              const profit = summary.sales - summary.expenses;
-              const isProfitable = profit > 0;
+              const isProfitable = summary.profit > 0;
 
               return (
                 <TableRow key={dept}>
@@ -79,7 +79,7 @@ const MonthlySummary = () => {
                     ₦{summary.expenses.toLocaleString()}
                   </TableCell>
                   <TableCell className={`text-right ${isProfitable ? 'text-green-600' : 'text-red-600'}`}>
-                    ₦{Math.abs(profit).toLocaleString()} {isProfitable ? '(Profit)' : '(Loss)'}
+                    ₦{Math.abs(summary.profit).toLocaleString()} {isProfitable ? '(Profit)' : '(Loss)'}
                   </TableCell>
                 </TableRow>
               );
