@@ -48,6 +48,7 @@ const ExpensesForm = () => {
         description: `₦${Number(amount).toLocaleString()} expense recorded for ${department} department.`,
       });
       
+      // Reset form
       setAmount('');
       setDescription('');
     } catch (error) {
