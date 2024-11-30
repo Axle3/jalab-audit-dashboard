@@ -9,7 +9,7 @@ import DepartmentAnalytics from '@/components/analytics/DepartmentAnalytics';
 import MonthlySummary from '@/components/analytics/MonthlySummary';
 import ExportControls from '@/components/ExportControls';
 import { Department } from '@/types/departments';
-import { ArrowLeft, BarChart3, Building2, Receipt, Wallet } from 'lucide-react';
+import { ArrowLeft, BarChart3, Building2, Receipt, Wallet, BanknoteIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RecordData } from '@/utils/csvExport';
 import { useQuery } from '@tanstack/react-query';
@@ -103,7 +103,7 @@ const Dashboard = () => {
       {!selectedDepartment && (
         <div className="space-y-8 animate-fadeIn">
           <ExportControls data={exportData} />
-          <MonthlySummary />
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {departments.map((dept) => (
               <Card
@@ -123,6 +123,18 @@ const Dashboard = () => {
               </Card>
             ))}
           </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BanknoteIcon className="w-5 h-5" />
+                Record Expenses
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ExpensesForm />
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
@@ -157,6 +169,8 @@ const Dashboard = () => {
               </Table>
             </CardContent>
           </Card>
+
+          <MonthlySummary />
         </div>
       )}
       {selectedDepartment && renderDepartmentContent()}
