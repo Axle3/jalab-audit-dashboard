@@ -14,8 +14,12 @@ const DepartmentAnalytics: React.FC<AnalyticsProps> = ({ department }) => {
   const { data = [], isLoading } = useQuery({
     queryKey: ['records', department],
     queryFn: async () => {
-      const records = await getRecords('records');
-      return records.filter((record: DailyRecord) => record.department === department);
+      const allRecords = await getRecords('records');
+      return allRecords
+        .filter((record: DailyRecord) => record.department === department)
+        .sort((a: DailyRecord, b: DailyRecord) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
     }
   });
 
@@ -53,13 +57,13 @@ const DepartmentAnalytics: React.FC<AnalyticsProps> = ({ department }) => {
                   </TableCell>
                 </TableRow>
               ) : (
-                data.map((record: any) => (
+                data.map((record: DailyRecord) => (
                   <TableRow key={record.id}>
                     <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
-                    <TableCell>₦{record.cash.toLocaleString()}</TableCell>
-                    <TableCell>₦{record.pos.toLocaleString()}</TableCell>
-                    <TableCell>₦{record.transfer.toLocaleString()}</TableCell>
-                    <TableCell>₦{record.debt.toLocaleString()}</TableCell>
+                    <TableCell>₦{record.cash?.toLocaleString() || '0'}</TableCell>
+                    <TableCell>₦{record.pos?.toLocaleString() || '0'}</TableCell>
+                    <TableCell>₦{record.transfer?.toLocaleString() || '0'}</TableCell>
+                    <TableCell>₦{record.debt?.toLocaleString() || '0'}</TableCell>
                     <TableCell>
                       {record.debtors?.map((debtor: any, index: number) => (
                         <div key={index} className="text-sm">
@@ -68,7 +72,7 @@ const DepartmentAnalytics: React.FC<AnalyticsProps> = ({ department }) => {
                         </div>
                       ))}
                     </TableCell>
-                    <TableCell className="text-right">₦{record.total.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">₦{record.total?.toLocaleString() || '0'}</TableCell>
                   </TableRow>
                 ))
               )}
