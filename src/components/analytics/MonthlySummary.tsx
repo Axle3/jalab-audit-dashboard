@@ -22,31 +22,10 @@ const MonthlySummary = () => {
     }
   });
 
-  const { data: expenses = [] } = useQuery({
-    queryKey: ['expenses', 'monthly'],
-    queryFn: async () => {
-      const allExpenses = await getRecords('expenses');
-      const currentMonthExpenses = allExpenses.filter((expense: any) => {
-        const expenseDate = new Date(expense.date);
-        const now = new Date();
-        return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear();
-      });
-      return currentMonthExpenses;
-    }
-  });
-
   const calculateDepartmentSummary = (department: Department) => {
     const departmentRecords = records.filter((record: any) => record.department === department);
-    const departmentExpenses = expenses.filter((expense: any) => expense.department === department);
-
     const totalSales = departmentRecords.reduce((sum: number, record: any) => sum + (record.total || 0), 0);
-    const totalExpenses = departmentExpenses.reduce((sum: number, expense: any) => sum + (expense.amount || 0), 0);
-
-    return {
-      sales: totalSales,
-      expenses: totalExpenses,
-      profit: totalSales - totalExpenses
-    };
+    return totalSales;
   };
 
   return (
@@ -60,26 +39,17 @@ const MonthlySummary = () => {
             <TableRow>
               <TableHead>Department</TableHead>
               <TableHead className="text-right">Total Sales</TableHead>
-              <TableHead className="text-right">Total Expenses</TableHead>
-              <TableHead className="text-right">Profit/Loss</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {departments.map((dept) => {
-              const summary = calculateDepartmentSummary(dept);
-              const isProfitable = summary.profit > 0;
+              const totalSales = calculateDepartmentSummary(dept);
 
               return (
                 <TableRow key={dept}>
                   <TableCell className="font-medium capitalize">{dept}</TableCell>
                   <TableCell className="text-right">
-                    ₦{summary.sales.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    ₦{summary.expenses.toLocaleString()}
-                  </TableCell>
-                  <TableCell className={`text-right ${isProfitable ? 'text-green-600' : 'text-red-600'}`}>
-                    ₦{Math.abs(summary.profit).toLocaleString()} {isProfitable ? '(Profit)' : '(Loss)'}
+                    ₦{totalSales.toLocaleString()}
                   </TableCell>
                 </TableRow>
               );

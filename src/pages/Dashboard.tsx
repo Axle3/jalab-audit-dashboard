@@ -4,12 +4,11 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import LaundryForm from '@/components/departments/LaundryForm';
 import HotelForm from '@/components/departments/HotelForm';
 import BarInventory from '@/components/departments/BarInventory';
-import ExpensesForm from '@/components/departments/ExpensesForm';
 import DepartmentAnalytics from '@/components/analytics/DepartmentAnalytics';
 import MonthlySummary from '@/components/analytics/MonthlySummary';
 import ExportControls from '@/components/ExportControls';
 import { Department } from '@/types/departments';
-import { ArrowLeft, BarChart3, Building2, Receipt, Wallet, BanknoteIcon } from 'lucide-react';
+import { ArrowLeft, BarChart3, Building2, Receipt, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RecordData } from '@/utils/csvExport';
 import { useQuery } from '@tanstack/react-query';
@@ -123,18 +122,6 @@ const Dashboard = () => {
               </Card>
             ))}
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BanknoteIcon className="w-5 h-5" />
-                Record Expenses
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ExpensesForm />
-            </CardContent>
-          </Card>
 
           <Card>
             <CardHeader>
