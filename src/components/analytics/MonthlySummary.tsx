@@ -31,7 +31,7 @@ const MonthlySummary = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly Summary - {currentMonth}</CardTitle>
+        <CardTitle>Monthly Sales Summary - {currentMonth}</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -44,7 +44,6 @@ const MonthlySummary = () => {
           <TableBody>
             {departments.map((dept) => {
               const totalSales = calculateDepartmentSummary(dept);
-
               return (
                 <TableRow key={dept}>
                   <TableCell className="font-medium capitalize">{dept}</TableCell>
